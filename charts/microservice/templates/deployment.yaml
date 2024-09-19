@@ -1,0 +1,26 @@
+# All these variables values is in the "values.yaml"
+# Then we ovveride each microservice values with eachmicroservice-values.yaml file..
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+spec:
+  replicas: {{ .Values.appReplicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+    spec:
+      containers:
+      - name: {{ .Values.appName }}
+        image: "{{ .Values.appImage }}:{{ .Values.appVersion }}"   # Two Variables image name and tag..
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        env:  # - range : is something like for loop..	
+        {{- range .Values.containerEnvVars}}  
+        - name: {{ .name }}		# Env variables is always strings, so 
+          value: {{ .value | quote }}	# we pipe the values to "quote" here to quote the values..
+        {{- end}}   # close loop or range..
